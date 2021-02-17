@@ -12,8 +12,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    virtual ~MainWindow();
+
+public slots:
+    void sizeOfMatrixChanged(int index);
+    void accuracyChanged(const QString& value);
+    void maxNumberOfIterationChanged(const QString& value);
+    void loadFile();
+    void calculate();
+    void exit();
 
 private:
     Ui::MainWindow *ui;
