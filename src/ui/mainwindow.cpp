@@ -2,6 +2,12 @@
 #include "ui_mainwindow.h"
 
 #include "exitdialog.h"
+#include "fileloaddialog.h"
+
+#include "../utils/linearsystemparser.h"
+
+#include <QFile>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
@@ -37,6 +43,24 @@ void MainWindow::maxNumberOfIterationChanged(const QString& value)
 
 void MainWindow::loadFile()
 {
+    FileLoadDialog d(this);
+
+    if(d.exec() == QDialog::Accepted)
+    {
+        QFile file = d.filePath();
+
+        if(file.open(QIODevice::ReadOnly))
+        {
+            QByteArray data = file.readAll();
+            LinearSystemParser p(data);
+            //TODO: implement this
+            file.close();
+        }
+        else
+        {
+            QMessageBox::critical(this, "Error", "File is not readable");
+        }
+    }
 }
 
 void MainWindow::calculate()

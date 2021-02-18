@@ -9,7 +9,6 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    src/core/linearsystem.cpp \
     src/core/linearsystemcalculator.cpp \
     src/core/linearsystemservice.cpp \
     src/core/linearsystemsolution.cpp \
@@ -19,10 +18,10 @@ SOURCES += \
     src/ui/fileloaddialog.cpp \
     src/ui/linearsystemwidget.cpp \
     src/ui/mainwindow.cpp \
-    src/ui/solutionrepresentdialog.cpp
+    src/ui/solutionrepresentdialog.cpp \
+    src/utils/linearsystemparser.cpp
 
 HEADERS += \
-    src/core/linearsystem.h \
     src/core/linearsystemcalculator.h \
     src/core/linearsystemservice.h \
     src/core/linearsystemsolution.h \
@@ -31,7 +30,8 @@ HEADERS += \
     src/ui/fileloaddialog.h \
     src/ui/linearsystemwidget.h \
     src/ui/mainwindow.h \
-    src/ui/solutionrepresentdialog.h
+    src/ui/solutionrepresentdialog.h \
+    src/utils/linearsystemparser.h
 
 FORMS += \
     src/ui/exitdialog.ui \

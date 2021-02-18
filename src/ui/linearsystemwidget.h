@@ -15,6 +15,11 @@ public:
     explicit LinearSystemWidget(QWidget *parent = nullptr);
     virtual ~LinearSystemWidget();
 
+    void setMatrixSize(int n);
+
+private:
+    QList<QWidget*> _widgets;
+
 private:
     Ui::LinearSystemWidget *ui;
 };
