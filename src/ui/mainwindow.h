@@ -17,8 +17,8 @@ public:
 
 public slots:
     void sizeOfMatrixChanged(int index);
-    void accuracyChanged(const QString& value);
-    void maxNumberOfIterationChanged(const QString& value);
+    void accuracyChanged(const QString& text);
+    void maxNumberOfIterationChanged(const QString& text);
     void loadFile();
     void calculate();
     void exit();

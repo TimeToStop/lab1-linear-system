@@ -19,7 +19,8 @@ SOURCES += \
     src/ui/linearsystemwidget.cpp \
     src/ui/mainwindow.cpp \
     src/ui/solutionrepresentdialog.cpp \
-    src/utils/linearsystemparser.cpp
+    src/utils/linearsystemparser.cpp \
+    src/utils/utils.cpp
 
 HEADERS += \
     src/core/linearsystemcalculator.h \
@@ -31,7 +32,8 @@ HEADERS += \
     src/ui/linearsystemwidget.h \
     src/ui/mainwindow.h \
     src/ui/solutionrepresentdialog.h \
-    src/utils/linearsystemparser.h
+    src/utils/linearsystemparser.h \
+    src/utils/utils.h
 
 FORMS += \
     src/ui/exitdialog.ui \

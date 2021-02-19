@@ -1,7 +1,6 @@
 #ifndef LINEARSYSTEMSOLUTION_H
 #define LINEARSYSTEMSOLUTION_H
 
-#include "linearsystem.h"
 
 class LinearSystemSolution
 {
