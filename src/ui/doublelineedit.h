@@ -18,9 +18,6 @@ signals:
 
 public slots:
     void onValueEdited(const QString&);
-
-private:
-    double _previous_value;
 };
 
 #endif // DOUBLELINEEDIT_H

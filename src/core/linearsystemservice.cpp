@@ -55,36 +55,26 @@ void LinearSystemService::setSize(int size)
     _size = size;
     _matrix = matrix;
     _vector = vector;
-
-    emit sizeChanged(size);
 }
 
 void LinearSystemService::setMaxNumberOfIteration(int number)
 {
-    if (_max_number_of_iteration != number) return;
     _max_number_of_iteration = number;
-    emit maxNumberOfIterationChanged(number);
 }
 
 void LinearSystemService::setAccuracy(double accuracy)
 {
-    if (::nearlyEqual(accuracy, _accuracy)) return;
     _accuracy = accuracy;
-    emit accuracyChanged(accuracy);
 }
 
 void LinearSystemService::setMatrixValue(int i, int j, double value)
 {
-    if (::nearlyEqual(value, _matrix[i][j])) return;
     _matrix[i][j] = value;
-    emit matrixValueChanged(i, j, value);
 }
 
 void LinearSystemService::setRightValue(int i, double value)
 {
-    if (::nearlyEqual(value, _vector[i])) return;
     _vector[i] = value;
-    emit rightValueChanged(i, value);
 }
 
 int LinearSystemService::size() const

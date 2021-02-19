@@ -6,6 +6,8 @@ SolutionRepresentDialog::SolutionRepresentDialog(QWidget *parent) :
     ui(new Ui::SolutionRepresentDialog)
 {
     ui->setupUi(this);
+
+    connect(ui->close, &QPushButton::clicked, this, &QDialog::accept);
 }
 
 SolutionRepresentDialog::~SolutionRepresentDialog()

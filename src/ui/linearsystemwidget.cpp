@@ -13,12 +13,6 @@ LinearSystemWidget::LinearSystemWidget(QWidget *parent) :
     ui(new Ui::LinearSystemWidget)
 {
     ui->setupUi(this);
-
-    connect(LinearSystemService::global(), &LinearSystemService::sizeChanged,
-    [=](int size)
-    {
-        setMatrixSize(size);
-    });
 }
 
 LinearSystemWidget::~LinearSystemWidget()
@@ -53,15 +47,6 @@ void LinearSystemWidget::setMatrixSize(int n)
                 LinearSystemService::global()->setMatrixValue(i, j, value);
             });
 
-            connect(LinearSystemService::global(), &LinearSystemService::matrixValueChanged,
-            [=] (int _i, int _j, double value)
-            {
-                if(i == _i && j == _j)
-                {
-                    edit->setValue(value);
-                }
-            });
-
             ui->layout->addWidget(edit, i, k++);
             _widgets.append(edit);
 
@@ -83,15 +68,6 @@ void LinearSystemWidget::setMatrixSize(int n)
         [=] (double value)
         {
             LinearSystemService::global()->setRightValue(i, value);
-        });
-
-        connect(LinearSystemService::global(), &LinearSystemService::rightValueChanged,
-        [=] (int _i, double value)
-        {
-            if(i == _i)
-            {
-                edit->setValue(value);
-            }
         });
 
         ui->layout->addWidget(edit, i, k++);

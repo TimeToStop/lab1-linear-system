@@ -29,13 +29,6 @@ public:
     double matrixValue(int i, int j) const;
     double rightValue(int i) const;
 
-signals:
-    void sizeChanged(int size);
-    void maxNumberOfIterationChanged(int number);
-    void accuracyChanged(double accuracy);
-    void matrixValueChanged(int i, int j, double value);
-    void rightValueChanged(int i, double value);
-
 private:
     static LinearSystemService _global;
 

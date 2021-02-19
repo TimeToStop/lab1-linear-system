@@ -3,6 +3,7 @@
 
 #include "exitdialog.h"
 #include "fileloaddialog.h"
+#include "solutionrepresentdialog.h"
 
 #include "../utils/linearsystemparser.h"
 #include "../core/linearsystemservice.h"
@@ -57,6 +58,7 @@ void MainWindow::sizeOfMatrixChanged(int index)
     {
         int value = ui->matrix_size->itemData(index).toInt();
         LinearSystemService::global()->setSize(value);
+        ui->mainframe->setMatrixSize(value);
     }
 }
 
@@ -114,6 +116,8 @@ void MainWindow::loadFile()
 
 void MainWindow::calculate()
 {
+    SolutionRepresentDialog d(this);
+    d.exec();
 }
 
 void MainWindow::exit()
