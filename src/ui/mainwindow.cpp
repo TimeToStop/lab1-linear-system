@@ -118,13 +118,13 @@ void MainWindow::loadFile()
 void MainWindow::calculate()
 {
     // For Test
-    LinearSystemService::global()->setMatrixValue(0, 0, 8);
-    LinearSystemService::global()->setMatrixValue(0, 1, 4);
-    LinearSystemService::global()->setMatrixValue(1, 0, 2);
-    LinearSystemService::global()->setMatrixValue(1, 1, 10);
+//    LinearSystemService::global()->setMatrixValue(0, 0, 8);
+//    LinearSystemService::global()->setMatrixValue(0, 1, 4);
+//    LinearSystemService::global()->setMatrixValue(1, 0, 2);
+//    LinearSystemService::global()->setMatrixValue(1, 1, 10);
 
-    LinearSystemService::global()->setRightValue(0, 16);
-    LinearSystemService::global()->setRightValue(1, 22);
+//    LinearSystemService::global()->setRightValue(0, 16);
+//    LinearSystemService::global()->setRightValue(1, 22);
 
     LinearSystemSolution s = LinearSystemCalculator::calculate(
         LinearSystemService::global()->size(),

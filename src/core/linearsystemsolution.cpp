@@ -5,30 +5,35 @@
 #include <QDebug>
 
 QString LinearSystemSolution::_html_pattern =
-    "<div>"
+    "<!DOCTYPE html><html><head><title>Solution</title></head><body>"
+    "<div style=\"margin : 0 10px\">"
     "   <div align=\"center\">Solution</div>"
     "   <div>"
     "       <div>Status %1</div>"
     "       <div>Iterations %2 out of %3</div>"
     "       <div>Accuracy %4 out of %5</div>"
     "       <div>Initial system:</div>"
-    "       <div>%6</div>"
+    "       <div style=\"margin : 0 10px\">%6</div>"
     "       <div>Initial vector:</div>"
-    "       <div>%7</div>"
+    "       <div style=\"margin : 0 10px\">%7</div>"
+    "       <div>Answer:</div>"
+    "       <div style=\"margin : 0 10px\">%8</div>"
     "   </div>"
     "   <div>"
-    "       %8"
+    "       %9"
     "   </div>"
     "</div>"
+    "</body></html>"
 ;
 
 QString LinearSystemSolution::_step_pattern =
     "<div>"
-    "   <div align=\"center\"> Step №%1</div>"
-    "   <div>%2</div>"
+    "   <div align=\"center\">Step №%1</div>"
+    "   <div>Calculation:</div>"
+    "   <div style=\"margin : 0 10px\">%2</div>"
     "   <div>Epsilon:</div>"
-    "   <div>%3</div>"
-    "   <div>e = max(%4) = %5</div>"
+    "   <div style=\"margin : 0 10px\">%3</div>"
+    "   <div>e = max(%4) = %5 </div>"
     "</div>"
 ;
 
@@ -110,6 +115,16 @@ QString LinearSystemSolution::toHTML() const
 
     s_initial_system.flush();
 
+    QString answer;
+    QTextStream s_answer(&answer);
+
+    for(int i = 0; i < n; i++)
+    {
+        s_answer << "<div>x" << i + 1 << " = " << _answer[i] << "</div>";
+    }
+
+    s_answer.flush();
+
     QString initial_vector;
     QTextStream s_initial_vector(&initial_vector);
 
@@ -121,8 +136,10 @@ QString LinearSystemSolution::toHTML() const
     s_initial_vector.flush();
 
     QString steps;
+    QTextStream s_steps(&steps);
 
     int number = 1;
+    double last_epsilon = 0;
 
     for(const SolutionStep& step : _steps)
     {
@@ -143,10 +160,10 @@ QString LinearSystemSolution::toHTML() const
 
             for(int j = 0; j < n; j++)
             {
-                s_calculation << _matrix_c[i][j] << " * " << step.prev()[j] << " + ";
+                s_calculation << _matrix_c[i][j] << " * " << step.x()[j] << " + ";
             }
 
-            s_calculation << _vector_d[i] << " = " << step.x()[i];
+            s_calculation << _vector_d[i] << " = " << step.prev()[i];
 
             // Epsilon
             s_epsilon << "<div>";
@@ -161,27 +178,32 @@ QString LinearSystemSolution::toHTML() const
 
         max.chop(1);
 
+        last_epsilon = step.epsilon();
+
         max_epsilon = QString::number(step.epsilon());
-        max_epsilon += (step.epsilon() < _target_accuracy ? " < " : " > ");
+        max_epsilon += (step.epsilon() < _target_accuracy ? " &lt;  " : "  &gt;  ");
         max_epsilon += QString::number(_target_accuracy);
 
         s_epsilon.flush();
         s_calculation.flush();
 
-        steps += _step_pattern.arg(QString::number(number++),
+        s_steps << _step_pattern.arg(QString::number(number++),
                                    step_calculation, epsilon, max,
                                    max_epsilon
         );
     }
 
+    s_steps.flush();
+
     return _html_pattern.arg(
                 solution_status,
                 QString::number(_steps.size()),
                 QString::number(_max_number_of_iteartion),
-                "0",
+                QString::number(last_epsilon),
                 QString::number(_target_accuracy),
                 initial_system,
                 initial_vector,
+                answer,
                 steps
     );
 }
