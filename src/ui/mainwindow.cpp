@@ -7,6 +7,7 @@
 
 #include "../utils/linearsystemparser.h"
 #include "../core/linearsystemservice.h"
+#include "../core/linearsystemcalculator.h"
 
 #include <QFile>
 #include <QMessageBox>
@@ -116,7 +117,15 @@ void MainWindow::loadFile()
 
 void MainWindow::calculate()
 {
-    SolutionRepresentDialog d(this);
+    LinearSystemSolution s = LinearSystemCalculator::calculate(
+        LinearSystemService::global()->size(),
+        LinearSystemService::global()->accuracy(),
+        LinearSystemService::global()->maxNumberOfIteration(),
+        LinearSystemService::global()->matrix(),
+        LinearSystemService::global()->rightVector()
+    );
+
+    SolutionRepresentDialog d(s, this);
     d.exec();
 }
 

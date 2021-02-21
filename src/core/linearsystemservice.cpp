@@ -77,6 +77,16 @@ void LinearSystemService::setRightValue(int i, double value)
     _vector[i] = value;
 }
 
+const DoubleMatrix &LinearSystemService::matrix() const
+{
+    return _matrix;
+}
+
+const DoubleVector &LinearSystemService::rightVector() const
+{
+    return _vector;
+}
+
 int LinearSystemService::size() const
 {
     return _size;

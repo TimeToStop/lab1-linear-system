@@ -23,6 +23,9 @@ public:
     void setMatrixValue(int i, int j, double value);
     void setRightValue(int i, double value);
 
+    const DoubleMatrix& matrix() const;
+    const DoubleVector& rightVector() const;
+
     int size() const;
     int maxNumberOfIteration() const;
     double accuracy() const;

@@ -12,6 +12,7 @@ SOURCES += \
     src/core/linearsystemcalculator.cpp \
     src/core/linearsystemservice.cpp \
     src/core/linearsystemsolution.cpp \
+    src/core/solutionstep.cpp \
     src/main.cpp \
     src/ui/doublelineedit.cpp \
     src/ui/exitdialog.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     src/core/linearsystemcalculator.h \
     src/core/linearsystemservice.h \
     src/core/linearsystemsolution.h \
+    src/core/solutionstep.h \
     src/ui/doublelineedit.h \
     src/ui/exitdialog.h \
     src/ui/fileloaddialog.h \
