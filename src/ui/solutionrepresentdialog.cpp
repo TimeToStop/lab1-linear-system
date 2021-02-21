@@ -8,9 +8,12 @@ SolutionRepresentDialog::SolutionRepresentDialog(const LinearSystemSolution& sol
     ui->setupUi(this);
 
     connect(ui->close, &QPushButton::clicked, this, &QDialog::accept);
+
+    ui->browser->setHtml(solution.toHTML());
 }
 
 SolutionRepresentDialog::~SolutionRepresentDialog()
 {
     delete ui;
 }
+

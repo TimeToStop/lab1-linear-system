@@ -63,6 +63,8 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
 
     return LinearSystemSolution(
                 status,
+                max_number_of_iteration,
+                accuracy,
                 matrix,
                 right,
                 c,
