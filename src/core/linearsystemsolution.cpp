@@ -2,6 +2,36 @@
 
 #include <QTextStream>
 
+#include <QDebug>
+
+QString LinearSystemSolution::_html_pattern =
+    "<div>"
+    "   <div align=\"center\">Solution</div>"
+    "   <div>"
+    "       <div>Status %1</div>"
+    "       <div>Iterations %2 out of %3</div>"
+    "       <div>Accuracy %4 out of %5</div>"
+    "       <div>Initial system:</div>"
+    "       <div>%6</div>"
+    "       <div>Initial vector:</div>"
+    "       <div>%7</div>"
+    "   </div>"
+    "   <div>"
+    "       %8"
+    "   </div>"
+    "</div>"
+;
+
+QString LinearSystemSolution::_step_pattern =
+    "<div>"
+    "   <div align=\"center\"> Step №%1</div>"
+    "   <div>%2</div>"
+    "   <div>Epsilon:</div>"
+    "   <div>%3</div>"
+    "   <div>e = max(%4) = %5</div>"
+    "</div>"
+;
+
 LinearSystemSolution::LinearSystemSolution(
         Status solved,
         int max_number_of_iteartion,
@@ -11,7 +41,8 @@ LinearSystemSolution::LinearSystemSolution(
         double c,
         const DoubleMatrix& matrix_c,
         const DoubleVector& vector_d,
-        const QList<SolutionStep>& steps
+        const QList<SolutionStep>& steps,
+        const DoubleVector& answer
 ):
     _solved(solved),
     _max_number_of_iteartion(max_number_of_iteartion),
@@ -21,7 +52,8 @@ LinearSystemSolution::LinearSystemSolution(
     _c(c),
     _matrix_c(matrix_c),
     _vector_d(vector_d),
-    _steps(steps)
+    _steps(steps),
+    _answer(answer)
 {
 }
 
@@ -34,7 +66,8 @@ LinearSystemSolution::LinearSystemSolution(const LinearSystemSolution &other):
     _c(other._c),
     _matrix_c(other._matrix_c),
     _vector_d(other._vector_d),
-    _steps(other._steps)
+    _steps(other._steps),
+    _answer(other._answer)
 {
 }
 
@@ -42,182 +75,113 @@ LinearSystemSolution::~LinearSystemSolution()
 {
 }
 
-Status LinearSystemSolution::solved() const
-{
-    return _solved;
-}
-
-int LinearSystemSolution::maxNumberOfIteration() const
-{
-    return _max_number_of_iteartion;
-}
-
-double LinearSystemSolution::targetAccuracy() const
-{
-    return _target_accuracy;
-}
-
-const DoubleMatrix& LinearSystemSolution::initMatrix() const
-{
-    return _init_matrix;
-}
-
-const DoubleVector& LinearSystemSolution::initVector() const
-{
-    return _init_vector;
-}
-
-double LinearSystemSolution::c() const
-{
-    return _c;
-}
-
-const DoubleMatrix& LinearSystemSolution::matrixC() const
-{
-    return _matrix_c;
-}
-
-const DoubleVector& LinearSystemSolution::vectorD() const
-{
-    return _vector_d;
-}
-
-const QList<SolutionStep>& LinearSystemSolution::steps() const
-{
-    return _steps;
-}
-
 QString LinearSystemSolution::toHTML() const
 {
-    QString html;
-    QTextStream s(&html);
+    int n = _init_matrix.size();
+    QString solution_status;
 
-    s << "<div align=center>Solution</div>";
-    s << "<div>Status = ";
-
-    switch (_solved)
+    switch(_solved)
     {
     case Status::SOLVED:
-        s << "SOLVED";
+        solution_status = "SOLVED";
         break;
     case Status::DIVERGES:
-        s << "DIVERGES";
+        solution_status = "DIVERGES";
         break;
     case Status::NO_DOMINANCE:
-        s << "NO_DOMINANCE";
-        break;
-    default:
+        solution_status = "NO DOMINANCE";
         break;
     }
 
-    s << "</div>";
-
-    s << "<div>Max Iteration = " << _max_number_of_iteartion << "</div>";
-    s << "<div>Iteration = " << _steps.size() << "</div>";
-    s << "<div>Target accuracy = " << _target_accuracy << "</div>";
-    s << "<div>Initial system:</div>";
-
-    s << "<div>";
-
-    int n = _init_matrix.size();
+    QString initial_system;
+    QTextStream s_initial_system(&initial_system);
 
     for(int i = 0; i < n; i++)
     {
-        s << "<div>";
-
+        s_initial_system << "<div>";
         for(int j = 0; j + 1 < n; j++)
         {
-            s << _init_matrix[i][j] << " * x" << j + 1 << " + ";
+            s_initial_system << _init_matrix[i][j] << " * x" << j + 1 << " +";
         }
 
-         s << _init_matrix[i][n - 1] << " * x" << n << " = " << _init_vector[i];
-         s << "</div>";
+        s_initial_system << _init_matrix[i][n - 1] << " * x" << n << " = " << _init_vector[i];
+        s_initial_system << "</div>";
     }
 
-    s << "</div>";
+    s_initial_system.flush();
 
-    // Solution
+    QString initial_vector;
+    QTextStream s_initial_vector(&initial_vector);
+
+    for(int i = 0; i < n; i++)
+    {
+        s_initial_vector << "<div>x" << i + 1 << " = " << _vector_d[i] << "</div>";
+    }
+
+    s_initial_vector.flush();
+
+    QString steps;
+
     int number = 1;
-
-    s << "<div>";
 
     for(const SolutionStep& step : _steps)
     {
-        s << "<div>";
+        QString epsilon;
+        QString max;
+        QString step_calculation;
+        QString max_epsilon;
 
-        s << "<div>Step №" << number++ << "</div>";
-        s << "<div>";
-
-        int n = _init_matrix.size();
+        QTextStream s_epsilon(&epsilon);
+        QTextStream s_calculation(&step_calculation);
 
         for(int i = 0; i < n; i++)
         {
-            s << "<div>";
-            s << "x" << i + 1 << " = ";
+            s_calculation << "<div>";
+
+            // Calculation
+            s_calculation << "x" << i + 1 << " = ";
 
             for(int j = 0; j < n; j++)
             {
-                s << _matrix_c[i][j] << " * " << step.prev()[j] << " + ";
+                s_calculation << _matrix_c[i][j] << " * " << step.prev()[j] << " + ";
             }
 
-             s << _vector_d[i] << " = " << step.x()[i];
-             s << "</div>";
+            s_calculation << _vector_d[i] << " = " << step.x()[i];
+
+            // Epsilon
+            s_epsilon << "<div>";
+            s_epsilon << "|x" << i + 1 << " - x" << i + 1 << "| = |"
+                        << step.x()[i] << " - " << step.prev()[i]
+                           << "| = " << step.epsilons()[i];
+            s_epsilon << "</div>";
+            max += QString::number(step.epsilons()[i]) + ",";
+
+            s_calculation << "</div>";
         }
 
-        s << "</div>";
+        max.chop(1);
 
-        s << "<div><div>Epsilon:</div><div>";
+        max_epsilon = QString::number(step.epsilon());
+        max_epsilon += (step.epsilon() < _target_accuracy ? " < " : " > ");
+        max_epsilon += QString::number(_target_accuracy);
 
-        for(int i = 0; i < n; i++)
-        {
-            s << "<div>";
-            s << "|x" << i + 1 << " - x" << i + 1 << "| = |"
-                        << step.x()[i] << " - " << step.prev()[i] << " | = "
-                        << step.epsilons()[i];
-            s << "</div>";
-        }
-        s << "</div>";
+        s_epsilon.flush();
+        s_calculation.flush();
 
-        s << "<div>";
-        s << "e = max(";
-
-        for(int i = 0; i + 1 < n; i++)
-        {
-            s << step.epsilons()[i] << ", ";
-        }
-
-        s << step.epsilons()[n - 1] << ") = " << step.epsilon();
-
-        s << (step.epsilon() < _target_accuracy ? " < " : " > ") << _target_accuracy;
-
-        s << "</div>";
-
-        s << "</div>";
-        s << "</div>";
+        steps += _step_pattern.arg(QString::number(number++),
+                                   step_calculation, epsilon, max,
+                                   max_epsilon
+        );
     }
 
-    s << "</div>";
-
-    s << "<div><div> Conclusion </div><div>";
-
-    switch (_solved)
-    {
-    case Status::SOLVED:
-        s << "Target accuracy was reached";
-        break;
-    case Status::DIVERGES:
-        s << "Target accuracy was not reached";
-        break;
-    case Status::NO_DOMINANCE:
-        s << "Calculated dominance is not less than 1";
-        break;
-    default:
-        break;
-    }
-
-    s << "</div>";
-    s << "</div>";
-
-    s.flush();
-    return html;
+    return _html_pattern.arg(
+                solution_status,
+                QString::number(_steps.size()),
+                QString::number(_max_number_of_iteartion),
+                "0",
+                QString::number(_target_accuracy),
+                initial_system,
+                initial_vector,
+                steps
+    );
 }

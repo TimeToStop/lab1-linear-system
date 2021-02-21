@@ -22,25 +22,21 @@ public:
                          double c,
                          const DoubleMatrix& matrix_c,
                          const DoubleVector& vector_d,
-                         const QList<SolutionStep>& steps
+                         const QList<SolutionStep>& steps,
+                         const DoubleVector& answer
     );
 
     LinearSystemSolution(const LinearSystemSolution& other);
     ~LinearSystemSolution();
 
-    Status solved() const;
-    int maxNumberOfIteration() const;
-    double targetAccuracy() const;
-    const DoubleMatrix& initMatrix() const;
-    const DoubleVector& initVector() const;
-    double c() const;
-    const DoubleMatrix& matrixC() const;
-    const DoubleVector& vectorD() const;
-    const QList<SolutionStep>& steps() const;
-
     QString toHTML() const;
 
 private:
+
+    static QString _html_pattern;
+    static QString _step_pattern;
+
+
     Status _solved;
     int _max_number_of_iteartion;
     double _target_accuracy;
@@ -50,6 +46,7 @@ private:
     DoubleMatrix _matrix_c;
     DoubleVector _vector_d;
     QList<SolutionStep> _steps;
+    DoubleVector _answer;
 };
 
 #endif // LINEARSYSTEMSOLUTION_H

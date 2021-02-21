@@ -21,17 +21,19 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
 
     double c = dominance(matrix_c);
     Status status;
+    DoubleVector answer;
     QList<SolutionStep> steps;
 
     if (c < 1)
     {
-        double max_epsilon = -1;
+        double max_epsilon = 0;
         DoubleVector epsilon = vector_d;
         DoubleVector temp = vector_d;
         DoubleVector current = vector_d;
 
         for(int i = 0; i < max_number_of_iteration; i++)
         {
+            max_epsilon = -1;
             // current = C * current + d
 
             for(int i = 0; i < n; i++)
@@ -51,7 +53,11 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
             steps.append(SolutionStep(i + 1, max_epsilon, current, temp, epsilon));
             current = temp;
 
-            if (max_epsilon < accuracy) break;
+            if (max_epsilon < accuracy)
+            {
+                answer = current;
+                break;
+            }
         }
 
         status = max_epsilon < accuracy ? Status::SOLVED : Status::DIVERGES;
@@ -70,7 +76,8 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
                 c,
                 matrix_c,
                 vector_d,
-                steps
+                steps,
+                answer
     );
 }
 
