@@ -20,6 +20,7 @@ SOURCES += \
     src/ui/linearsystemwidget.cpp \
     src/ui/mainwindow.cpp \
     src/ui/solutionrepresentdialog.cpp \
+    src/utils/htmlwriter.cpp \
     src/utils/linearsystemparser.cpp \
     src/utils/utils.cpp
 
@@ -34,6 +35,7 @@ HEADERS += \
     src/ui/linearsystemwidget.h \
     src/ui/mainwindow.h \
     src/ui/solutionrepresentdialog.h \
+    src/utils/htmlwriter.h \
     src/utils/linearsystemparser.h \
     src/utils/utils.h
 

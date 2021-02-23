@@ -29,14 +29,10 @@ public:
     LinearSystemSolution(const LinearSystemSolution& other);
     ~LinearSystemSolution();
 
+    QString statusAsString() const;
     QString toHTML() const;
 
 private:
-
-    static QString _html_pattern;
-    static QString _step_pattern;
-
-
     Status _solved;
     int _max_number_of_iteartion;
     double _target_accuracy;

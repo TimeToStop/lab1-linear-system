@@ -1,41 +1,39 @@
 #include "linearsystemsolution.h"
 
-#include <QTextStream>
+#include "../utils/htmlwriter.h"
 
-#include <QDebug>
+//QString LinearSystemSolution::_html_pattern =
+//    "<!DOCTYPE html><html><head><title>Solution</title></head><body>"
+//    "<div style=\"margin : 0 10px\">"
+//    "   <div align=\"center\">Solution</div>"
+//    "   <div>"
+//    "       <div>Status %1</div>"
+//    "       <div>Iterations %2 out of %3</div>"
+//    "       <div>Accuracy %4 out of %5</div>"
+//    "       <div>Initial system:</div>"
+//    "       <div style=\"margin : 0 10px\">%6</div>"
+//    "       <div>Initial vector:</div>"
+//    "       <div style=\"margin : 0 10px\">%7</div>"
+//    "       <div>Answer:</div>"
+//    "       <div style=\"margin : 0 10px\">%8</div>"
+//    "   </div>"
+//    "   <div>"
+//    "       %9"
+//    "   </div>"
+//    "</div>"
+//    "</body></html>"
+//;
 
-QString LinearSystemSolution::_html_pattern =
-    "<!DOCTYPE html><html><head><title>Solution</title></head><body>"
-    "<div style=\"margin : 0 10px\">"
-    "   <div align=\"center\">Solution</div>"
-    "   <div>"
-    "       <div>Status %1</div>"
-    "       <div>Iterations %2 out of %3</div>"
-    "       <div>Accuracy %4 out of %5</div>"
-    "       <div>Initial system:</div>"
-    "       <div style=\"margin : 0 10px\">%6</div>"
-    "       <div>Initial vector:</div>"
-    "       <div style=\"margin : 0 10px\">%7</div>"
-    "       <div>Answer:</div>"
-    "       <div style=\"margin : 0 10px\">%8</div>"
-    "   </div>"
-    "   <div>"
-    "       %9"
-    "   </div>"
-    "</div>"
-    "</body></html>"
-;
-
-QString LinearSystemSolution::_step_pattern =
-    "<div>"
-    "   <div align=\"center\">Step №%1</div>"
-    "   <div>Calculation:</div>"
-    "   <div style=\"margin : 0 10px\">%2</div>"
-    "   <div>Epsilon:</div>"
-    "   <div style=\"margin : 0 10px\">%3</div>"
-    "   <div>e = max(%4) = %5 </div>"
-    "</div>"
-;
+//QString LinearSystemSolution::_step_pattern =
+//    "<div>"
+//    "   <div align=\"center\">Step №%1</div>"
+//    "   <div>Calculation:</div>"
+//    "   <div style=\"margin : 0 10px\">%2</div>"
+//    "   <div>Epsilon:</div>"
+//    "   <div style=\"margin : 0 10px\">%3</div>"
+//    "   <div>e = max(%4) = %5 </div>"
+//    "</div>"
+//;
 
 LinearSystemSolution::LinearSystemSolution(
         Status solved,
@@ -80,130 +78,70 @@ LinearSystemSolution::~LinearSystemSolution()
 {
 }
 
-QString LinearSystemSolution::toHTML() const
+QString LinearSystemSolution::statusAsString() const
 {
-    int n = _init_matrix.size();
-    QString solution_status;
-
-    switch(_solved)
+    switch (_solved)
     {
     case Status::SOLVED:
-        solution_status = "SOLVED";
-        break;
+        return "SOLVED";
     case Status::DIVERGES:
-        solution_status = "DIVERGES";
-        break;
+        return "DIVERGES";
     case Status::NO_DOMINANCE:
-        solution_status = "NO DOMINANCE";
-        break;
+        return "NO DOMINANCE";
     }
+}
 
-    QString initial_system;
-    QTextStream s_initial_system(&initial_system);
+QString LinearSystemSolution::toHTML() const
+{
+    HtmlWriter w;
+    w.writeDivElement("margin: 0 10px");
 
-    for(int i = 0; i < n; i++)
+    w.writeParagraph("Solution", "text-align : center");
+
+    w.writeDivElement("Overview: ");
+    w.writeParagraph(QStringLiteral("Status = %1").arg(statusAsString()));
+
+    if (_solved != Status::NO_DOMINANCE)
     {
-        s_initial_system << "<div>";
-        for(int j = 0; j + 1 < n; j++)
+        w.writeParagraph(QStringLiteral("Answer") + (_solved == Status::DIVERGES ? " - DIVERGES" : ":"));
+        w.writeDivElement();
+
+        int i = 1;
+
+        for(const double& x : _answer)
         {
-            s_initial_system << _init_matrix[i][j] << " * x" << j + 1 << " +";
+            w.writeParagraph("x" + QString::number(i++) + " = " + QString::number(x));
         }
 
-        s_initial_system << _init_matrix[i][n - 1] << " * x" << n << " = " << _init_vector[i];
-        s_initial_system << "</div>";
+        w.writeEndElement();
+    }
+    else
+    {
+        w.writeParagraph("Answer - NO DOMINANCE");
     }
 
-    s_initial_system.flush();
+    w.writeEndElement();
 
-    QString answer;
-    QTextStream s_answer(&answer);
+    w.writeParagraph(QStringLiteral("Diagonal dominance = %1").arg(_c));
 
-    for(int i = 0; i < n; i++)
+    w.writeParagraph("Initial matrix: ");
+
+    w.writeDivElement();
+
+    for(const DoubleVector& row : _init_matrix)
     {
-        s_answer << "<div>x" << i + 1 << " = " << _answer[i] << "</div>";
-    }
+        QString text;
 
-    s_answer.flush();
-
-    QString initial_vector;
-    QTextStream s_initial_vector(&initial_vector);
-
-    for(int i = 0; i < n; i++)
-    {
-        s_initial_vector << "<div>x" << i + 1 << " = " << _vector_d[i] << "</div>";
-    }
-
-    s_initial_vector.flush();
-
-    QString steps;
-    QTextStream s_steps(&steps);
-
-    int number = 1;
-    double last_epsilon = 0;
-
-    for(const SolutionStep& step : _steps)
-    {
-        QString epsilon;
-        QString max;
-        QString step_calculation;
-        QString max_epsilon;
-
-        QTextStream s_epsilon(&epsilon);
-        QTextStream s_calculation(&step_calculation);
-
-        for(int i = 0; i < n; i++)
+        for(const double& value : row)
         {
-            s_calculation << "<div>";
-
-            // Calculation
-            s_calculation << "x" << i + 1 << " = ";
-
-            for(int j = 0; j < n; j++)
-            {
-                s_calculation << _matrix_c[i][j] << " * " << step.x()[j] << " + ";
-            }
-
-            s_calculation << _vector_d[i] << " = " << step.prev()[i];
-
-            // Epsilon
-            s_epsilon << "<div>";
-            s_epsilon << "|x" << i + 1 << " - x" << i + 1 << "| = |"
-                        << step.x()[i] << " - " << step.prev()[i]
-                           << "| = " << step.epsilons()[i];
-            s_epsilon << "</div>";
-            max += QString::number(step.epsilons()[i]) + ",";
-
-            s_calculation << "</div>";
+            text += QString::number(value) + " ";
         }
 
-        max.chop(1);
-
-        last_epsilon = step.epsilon();
-
-        max_epsilon = QString::number(step.epsilon());
-        max_epsilon += (step.epsilon() < _target_accuracy ? " &lt;  " : "  &gt;  ");
-        max_epsilon += QString::number(_target_accuracy);
-
-        s_epsilon.flush();
-        s_calculation.flush();
-
-        s_steps << _step_pattern.arg(QString::number(number++),
-                                   step_calculation, epsilon, max,
-                                   max_epsilon
-        );
+        w.writeParagraph(text);
     }
 
-    s_steps.flush();
+    w.writeEndElement();
 
-    return _html_pattern.arg(
-                solution_status,
-                QString::number(_steps.size()),
-                QString::number(_max_number_of_iteartion),
-                QString::number(last_epsilon),
-                QString::number(_target_accuracy),
-                initial_system,
-                initial_vector,
-                answer,
-                steps
-    );
+    w.writeEndElement();
+    return w.toHtml();
 }
