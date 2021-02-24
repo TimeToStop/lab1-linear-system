@@ -18,13 +18,13 @@ HtmlWriter::~HtmlWriter()
 
 void HtmlWriter::writeDivElement(const QString &styles)
 {
-    _s << QStringLiteral("<div styles=\"%1\">").arg(styles);
+    _s << QStringLiteral("<div style=\"%1\">").arg(styles);
     _stack.push("</div>");
 }
 
 void HtmlWriter::writeParagraph(const QString &text, const QString &styles)
 {
-    _s << QStringLiteral("<p styles=\"%1\">").arg(styles)
+    _s << QStringLiteral("<p style=\"%1\">").arg(styles)
             << text
        << QStringLiteral("</p>");
 }

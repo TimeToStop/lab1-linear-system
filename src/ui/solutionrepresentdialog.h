@@ -18,6 +18,9 @@ public:
     virtual ~SolutionRepresentDialog();
 
 private:
+    QString _html;
+
+private:
     Ui::SolutionRepresentDialog *ui;
 };
 

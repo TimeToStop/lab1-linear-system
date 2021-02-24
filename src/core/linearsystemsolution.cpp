@@ -104,13 +104,13 @@ QString LinearSystemSolution::toHTML() const
     if (_solved != Status::NO_DOMINANCE)
     {
         w.writeParagraph(QStringLiteral("Answer") + (_solved == Status::DIVERGES ? " - DIVERGES" : ":"));
-        w.writeDivElement();
+        w.writeDivElement("margin: 0 10px");
 
         int i = 1;
 
         for(const double& x : _answer)
         {
-            w.writeParagraph("x" + QString::number(i++) + " = " + QString::number(x));
+            w.writeParagraph("x<sub>" + QString::number(i++) + "</sub> = " + QString::number(x));
         }
 
         w.writeEndElement();
@@ -124,23 +124,130 @@ QString LinearSystemSolution::toHTML() const
 
     w.writeParagraph(QStringLiteral("Diagonal dominance = %1").arg(_c));
 
-    w.writeParagraph("Initial matrix: ");
+    w.writeParagraph("Input system: ");
 
-    w.writeDivElement();
+    w.writeDivElement("margin: 0 10px");
 
-    for(const DoubleVector& row : _init_matrix)
+    const int n = _init_matrix.size();
+
+    for(int i = 0; i < n; i++)
     {
         QString text;
 
-        for(const double& value : row)
+        for(int j = 0; j + 1 < n; j++)
         {
-            text += QString::number(value) + " ";
+            text += QString::number(_init_matrix[i][j]) + " * x<sub>" + QString::number(j + 1) + "</sub> + ";
         }
+
+        text += QString::number(_init_matrix[i][n - 1]) + " * x<sub>" + QString::number(n) + "</sub> = " + QString::number(_init_vector[i]);
 
         w.writeParagraph(text);
     }
 
     w.writeEndElement();
+
+    if (_solved != Status::NO_DOMINANCE)
+    {
+        w.writeDivElement();
+
+        w.writeParagraph("New system: ");
+
+        w.writeDivElement("margin: 0 10px");
+
+        for(int i = 0; i < n; i++)
+        {
+            QString text = "x<sub>" + QString::number(i + 1) + "</sub> = ";
+
+            for(int j = 0; j < n; j++)
+            {
+                text += QString::number(_matrix_c[i][j]) + " * x<sub>" + QString::number(j + 1) + "</sub> + ";
+            }
+
+            text += QString::number(_vector_d[i]);
+
+            w.writeParagraph(text);
+        }
+
+        w.writeEndElement();
+
+        w.writeEndElement();
+
+        w.writeDivElement();
+
+        w.writeParagraph("Initial vector:");
+
+        w.writeDivElement("margin: 0 10px");
+
+        for(int i = 0; i < n; i++)
+        {
+            QString text;
+            text = "x<sub>" + QString::number(i + 1) + "</sub> = " + QString::number(_vector_d[i]);
+            w.writeParagraph(text);
+        }
+
+        w.writeEndElement();
+
+        w.writeEndElement();
+
+        // Steps
+        w.writeDivElement();
+
+        int index = 1;
+        int iteration_number = 1;
+
+        for(const SolutionStep& step : _steps)
+        {
+            w.writeDivElement();
+
+            w.writeParagraph("Step №" + QString::number(index++), "text-align: center");
+
+            w.writeDivElement();
+
+            for(int i = 0; i < n; i++)
+            {
+                QString text;
+                text = "x<sub>" + QString::number(i + 1) + "</sub><sup>"
+                        + QString::number(iteration_number) + "</sup> = ";
+
+                for(int j = 0; j < n; j++)
+                {
+                    text += QString::number(_matrix_c[i][j])
+                            + " * " + QString::number(step.prev()[j])
+                            + " + ";
+                }
+
+                text += QString::number(_vector_d[i])
+                        + " = " + QString::number(step.x()[i]);
+
+                text += " e = |x<sub>"
+                        + QString::number(i + 1)
+                     + "</sub><sup>" + QString::number(iteration_number) + "</sup>"
+                     + " - x<sub>" + QString::number(i + 1) + "</sub><sup>"
+                     + QString::number(iteration_number - 1) + "</sup>| = |"
+                     + QString::number(step.x()[i]) + " - " + QString::number(step.prev()[i]) + "| = "
+                     + QString::number(step.epsilons()[i]);
+
+                w.writeParagraph(text);
+            }
+
+            QString text = "e = max(";
+
+            for(int i = 0; i + 1 < n; i++)
+            {
+                text += QString::number(step.epsilons()[i]) + ", ";
+            }
+
+            text += QString::number(step.epsilons()[n - 1]) + ") = " + QString::number(step.epsilon());
+            text += (step.epsilon() < _target_accuracy ? " &lt; " : " &gt; ") + QString::number(_target_accuracy);
+
+            w.writeParagraph(text);
+
+            w.writeEndElement();
+            w.writeEndElement();
+        }
+
+        w.writeEndElement();
+    }
 
     w.writeEndElement();
     return w.toHtml();

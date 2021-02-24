@@ -34,7 +34,6 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
         for(int i = 0; i < max_number_of_iteration; i++)
         {
             max_epsilon = -1;
-            // current = C * current + d
 
             for(int i = 0; i < n; i++)
             {
@@ -50,7 +49,7 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
                 max_epsilon = std::max(max_epsilon, epsilon[i]);
             }
 
-            steps.append(SolutionStep(i + 1, max_epsilon, current, temp, epsilon));
+            steps.append(SolutionStep(i + 1, max_epsilon, temp, current, epsilon));
             current = temp;
 
             if (max_epsilon < accuracy)

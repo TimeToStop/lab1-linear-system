@@ -11,8 +11,8 @@ public:
     HtmlWriter();
     ~HtmlWriter();
 
-    void writeDivElement(const QString& styles = "margin : 0px");
-    void writeParagraph(const QString& text, const QString& styles = "margin : 0px");
+    void writeDivElement(const QString& styles = "margin: 0px");
+    void writeParagraph(const QString& text, const QString& styles = "margin: 0px");
     void writeEndElement();
 
     QString toHtml() const;
