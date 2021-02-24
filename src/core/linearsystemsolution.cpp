@@ -2,39 +2,6 @@
 
 #include "../utils/htmlwriter.h"
 
-//QString LinearSystemSolution::_html_pattern =
-//    "<!DOCTYPE html><html><head><title>Solution</title></head><body>"
-//    "<div style=\"margin : 0 10px\">"
-//    "   <div align=\"center\">Solution</div>"
-//    "   <div>"
-//    "       <div>Status %1</div>"
-//    "       <div>Iterations %2 out of %3</div>"
-//    "       <div>Accuracy %4 out of %5</div>"
-//    "       <div>Initial system:</div>"
-//    "       <div style=\"margin : 0 10px\">%6</div>"
-//    "       <div>Initial vector:</div>"
-//    "       <div style=\"margin : 0 10px\">%7</div>"
-//    "       <div>Answer:</div>"
-//    "       <div style=\"margin : 0 10px\">%8</div>"
-//    "   </div>"
-//    "   <div>"
-//    "       %9"
-//    "   </div>"
-//    "</div>"
-//    "</body></html>"
-//;
-
-//QString LinearSystemSolution::_step_pattern =
-//    "<div>"
-//    "   <div align=\"center\">Step №%1</div>"
-//    "   <div>Calculation:</div>"
-//    "   <div style=\"margin : 0 10px\">%2</div>"
-//    "   <div>Epsilon:</div>"
-//    "   <div style=\"margin : 0 10px\">%3</div>"
-//    "   <div>e = max(%4) = %5 </div>"
-//    "</div>"
-//;
-
 LinearSystemSolution::LinearSystemSolution(
         Status solved,
         int max_number_of_iteartion,

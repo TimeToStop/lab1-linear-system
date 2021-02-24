@@ -2,3 +2,7 @@
 
 /build/**
 !/build/.gitkeep
+
+/test/**
+!/test/.gitkeep
+
