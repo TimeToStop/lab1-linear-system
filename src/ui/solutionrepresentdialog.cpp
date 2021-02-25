@@ -1,6 +1,7 @@
 #include "solutionrepresentdialog.h"
 #include "ui_solutionrepresentdialog.h"
 
+#include <QPrinter>
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -85,6 +86,14 @@ void SolutionRepresentDialog::saveHtmlFile(QFile& file)
 
 void SolutionRepresentDialog::savePdfFile(QFile& file)
 {
-    // TODO: write pdf file
+    QTextDocument document;
+    document.setHtml(_html);
+
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(file.fileName());
+    printer.setPageMargins(QMarginsF(15, 15, 15, 15));
+
+    document.print(&printer);
 }
 
