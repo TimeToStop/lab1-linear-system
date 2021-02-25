@@ -103,10 +103,27 @@ void MainWindow::loadFile()
 
         if(file.open(QIODevice::ReadOnly))
         {
-            QByteArray data = file.readAll();
-            LinearSystemParser p(data);
-            //TODO: implement this
+            LinearSystemParser p(&file);
             file.close();
+
+            if (!p.hasError())
+            {
+                LinearSystemSolution s = LinearSystemCalculator::calculate(
+                                p.n(),
+                                p.accuracy(),
+                                p.maxNumberOfIterations(),
+                                p.matrix(),
+                                p.vector()
+                            );
+
+                SolutionRepresentDialog d(s, this);
+
+                d.exec();
+            }
+            else
+            {
+                QMessageBox::critical(this, "Error", p.error());
+            }
         }
         else
         {
@@ -117,15 +134,6 @@ void MainWindow::loadFile()
 
 void MainWindow::calculate()
 {
-    // For Test
-//    LinearSystemService::global()->setMatrixValue(0, 0, 8);
-//    LinearSystemService::global()->setMatrixValue(0, 1, 4);
-//    LinearSystemService::global()->setMatrixValue(1, 0, 2);
-//    LinearSystemService::global()->setMatrixValue(1, 1, 10);
-
-//    LinearSystemService::global()->setRightValue(0, 16);
-//    LinearSystemService::global()->setRightValue(1, 22);
-
     LinearSystemSolution s = LinearSystemCalculator::calculate(
         LinearSystemService::global()->size(),
         LinearSystemService::global()->accuracy(),

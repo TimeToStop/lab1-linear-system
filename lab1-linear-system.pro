@@ -22,6 +22,7 @@ SOURCES += \
     src/ui/solutionrepresentdialog.cpp \
     src/utils/htmlwriter.cpp \
     src/utils/linearsystemparser.cpp \
+    src/utils/parseexception.cpp \
     src/utils/utils.cpp
 
 HEADERS += \
@@ -37,6 +38,7 @@ HEADERS += \
     src/ui/solutionrepresentdialog.h \
     src/utils/htmlwriter.h \
     src/utils/linearsystemparser.h \
+    src/utils/parseexception.h \
     src/utils/utils.h
 
 FORMS += \

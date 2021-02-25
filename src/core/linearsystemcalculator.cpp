@@ -12,7 +12,7 @@ LinearSystemSolution LinearSystemCalculator::calculate(int n, double accuracy, i
 
         for(int j = 0; j < n; j++)
         {
-            matrix_c[i][j] /= q;
+            matrix_c[i][j] /= -q;
         }
 
         matrix_c[i][i] = 0;

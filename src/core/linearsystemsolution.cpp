@@ -148,7 +148,7 @@ QString LinearSystemSolution::toHTML() const
         for(int i = 0; i < n; i++)
         {
             QString text;
-            text = "x<sub>" + QString::number(i + 1) + "</sub> = " + QString::number(_vector_d[i]);
+            text = "x<sub>" + QString::number(i + 1) + "</sub><sup>0</sup> = " + QString::number(_vector_d[i]);
             w.writeParagraph(text);
         }
 

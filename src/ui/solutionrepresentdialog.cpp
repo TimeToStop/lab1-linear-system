@@ -92,7 +92,7 @@ void SolutionRepresentDialog::savePdfFile(QFile& file)
     QPrinter printer;
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(file.fileName());
-    printer.setPageMargins(QMarginsF(15, 15, 15, 15));
+    printer.setPageMargins(QMarginsF(0, 0, 0, 0));
 
     document.print(&printer);
 }
