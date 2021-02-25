@@ -5,6 +5,8 @@
 #include "fileloaddialog.h"
 #include "solutionrepresentdialog.h"
 
+#include "../utils/doublevalidator.h"
+
 #include "../utils/linearsystemparser.h"
 #include "../core/linearsystemservice.h"
 #include "../core/linearsystemcalculator.h"
@@ -21,15 +23,6 @@ MainWindow::MainWindow(QWidget *parent):
 {
     ui->setupUi(this);
 
-    // Connections
-    connect(ui->accuracy, &QLineEdit::textChanged, this, &MainWindow::accuracyChanged);
-    connect(ui->matrix_size, &QComboBox::currentIndexChanged, this, &MainWindow::sizeOfMatrixChanged, Qt::ConnectionType::DirectConnection);
-    connect(ui->calculate, &QPushButton::clicked, this, &MainWindow::calculate);
-    connect(ui->max_iteration_number, &QLineEdit::textChanged, this, &MainWindow::maxNumberOfIterationChanged);
-    connect(ui->load_file, &QPushButton::clicked, this, &MainWindow::loadFile);
-    connect(ui->exit, &QPushButton::clicked, this, &MainWindow::exit);
-
-
     ui->mainframe->setMatrixSize(LinearSystemService::_initial_size);
 
     // Range of matrix size
@@ -43,9 +36,19 @@ MainWindow::MainWindow(QWidget *parent):
     ui->accuracy->setText(QString::number(LinearSystemService::_initial_accuracy));
 
     // Validators
-    // TODO: magic value
-    ui->accuracy->setValidator(new QDoubleValidator());
-    ui->max_iteration_number->setValidator(new QIntValidator(1, 9999999));
+    DoubleValidator* validator = new DoubleValidator(this);
+    validator->setBottom(0);
+    ui->accuracy->setValidator(validator);
+    ui->max_iteration_number->setValidator(new QIntValidator(1, 9999999, this));
+
+
+    // Connections
+    connect(ui->accuracy, &QLineEdit::textEdited, this, &MainWindow::accuracyChanged);
+    connect(ui->matrix_size, &QComboBox::currentIndexChanged, this, &MainWindow::sizeOfMatrixChanged, Qt::ConnectionType::DirectConnection);
+    connect(ui->calculate, &QPushButton::clicked, this, &MainWindow::calculate);
+    connect(ui->max_iteration_number, &QLineEdit::textChanged, this, &MainWindow::maxNumberOfIterationChanged);
+    connect(ui->load_file, &QPushButton::clicked, this, &MainWindow::loadFile);
+    connect(ui->exit, &QPushButton::clicked, this, &MainWindow::exit);
 }
 
 MainWindow::~MainWindow()
@@ -65,8 +68,14 @@ void MainWindow::sizeOfMatrixChanged(int index)
 
 void MainWindow::accuracyChanged(const QString& text)
 {    
+    if (text.isEmpty()) return;
+    if (text.size() > 0 && text.toLower() == "e") return;
+
+    QString new_text = text;
+    new_text.replace(',', '.');
+
     bool ok = true;
-    double value = text.toDouble(&ok);
+    double value = new_text.toDouble(&ok);
 
     if(!ok)
     {
@@ -80,6 +89,8 @@ void MainWindow::accuracyChanged(const QString& text)
 
 void MainWindow::maxNumberOfIterationChanged(const QString& text)
 {
+    if (text.isEmpty()) return;
+
     bool ok = true;
     int value = text.toInt(&ok);
 

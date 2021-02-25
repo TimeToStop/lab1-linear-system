@@ -4,12 +4,13 @@
 #include <QDoubleValidator>
 
 #include "../utils/utils.h"
+#include "../utils/doublevalidator.h"
 
 DoubleLineEdit::DoubleLineEdit(double value, QWidget* parent):
     QLineEdit("0", parent)
 {
     connect(this, &QLineEdit::textEdited, this, &DoubleLineEdit::onValueEdited);
-    setValidator(new QDoubleValidator(this));
+    setValidator(new DoubleValidator(this));
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setFixedWidth(40);
     setValue(value);
@@ -26,10 +27,17 @@ void DoubleLineEdit::setValue(double value)
 
 void DoubleLineEdit::onValueEdited(const QString& text)
 {
-    if (text.isEmpty()) return;
+    double value = 0;
+    QString new_text = text;
+
+    if (text.size() > 0 && text[text.size() - 1].toLower() == 'e') new_text.chop(1);
+
+    if (new_text.isEmpty()) return;
+    if (new_text == "-") return;
 
     bool ok = true;
-    double value = text.toDouble(&ok);
+    new_text.replace(',', '.');
+    value = new_text.toDouble(&ok);
 
     if (!ok)
     {
